@@ -11,6 +11,7 @@ class UserProfile(AbstractUser):
     nick_name = models.CharField(max_length=50, verbose_name=u"昵称", default='')
     avator = models.ImageField(upload_to='upload/avator/%Y%m', default='avator/default.png', max_length=100)
 
+    introduce = models.TextField(default=u'', verbose_name=u"个人介绍")
     gender = models.IntegerField(choices=((0, u'男'), (1, u'女')), default=1)
     blogurl = models.CharField(max_length=100, default=u'')
 

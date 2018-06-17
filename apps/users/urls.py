@@ -16,8 +16,9 @@ Including another URLconf
 """
 from django.conf.urls import url
 
-from main import views
+from users.views import LoginView, UserInfo
 
 urlpatterns = [
-    url(r'^poem_by_title/', views.get_poem_by_title, name='poem_by_title'),
+    url(r'^login/', LoginView.as_view(), name='login'),
+    url(r'^user_info/', UserInfo.as_view(), name='user_info'),
 ]

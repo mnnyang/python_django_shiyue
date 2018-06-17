@@ -1,0 +1,103 @@
+{% load staticfiles %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <title>Title</title>
+    {#    <link rel="stylesheet" href="css/login_style.css">#}
+    <link rel="stylesheet" href="{% static 'css/login_style.css' %}">
+</head>
+<body>
+
+<div class="login-wrapper">
+    <div class="login">
+
+        <img src="{% static 'images/image.jpg' %}" class="avator">
+
+        <div class="title-2">诗&nbsp;曰</div>
+
+        <div class="login-form-wrapper">
+            <form id="login-form">
+                <input class="username" name="username" required type="text" placeholder="邮箱">
+                <input class="password" name="password" required type="password" placeholder="密码" maxlength="16">
+                {% csrf_token %}
+            </form>
+
+        </div>
+    </div>
+    <button class="submit-btn">马上登录</button>
+    <span class="info">账号不存在将会自动注册！</span>
+</div>
+
+<script src="{% static 'js/jquery-2.1.1.min.js' %}"></script>
+<script src="{% static 'js/csrf.js' %}"></script>
+<script>
+
+
+    $(function () {
+        $('.submit-btn').on('click', function () {
+
+            if (isLoading) {
+                return;
+            }
+
+
+            var username = $('input[name=username]').val();
+            var password = $('input[name=password]').val();
+
+            if (username == '') {
+                toast("邮箱必须填写");
+                return false;
+            }
+
+            if (password == '') {
+                toast("密码必须填写");
+                return false;
+            }
+
+            loading(true);
+            $.ajax({
+                type: "POST",
+                url: "{% url 'login' %}",
+                data: $('#login-form').serialize(),
+                success: function (result) {
+                    console.log(result);
+                    loading(false);
+                    android.accessSucceed(result);
+                },
+                error: function () {
+                    loading(false);
+                    toast("网络或服务器错误！");
+                }
+            })
+        });
+    });
+
+    function toast(s = '') {
+        android.toast(s);
+        {#alert(s)#}
+    }
+
+    var timer;
+    var anim_show = ['.', '..', '...'];
+    var anim_curr = 0;
+    var isLoading = false;
+
+    function loading(load = true) {
+        isLoading = load;
+        $('.submit-btn').html("马上登录");
+        if (!load) {
+            clearInterval(timer);
+            return;
+        }
+        timer = setInterval(function () {
+            $('.submit-btn').html("登录中" + anim_show[anim_curr++]);
+            anim_curr = anim_curr >= 3 ? 0 : anim_curr;
+        }, 500);
+    }
+</script>
+</body>
+</html>

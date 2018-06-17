@@ -1,11 +1,10 @@
 # coding=utf-8
 import json
 
-from django.core import serializers
 from django.db import connection
 from django.http import HttpResponse
+
 # Create your views here.
-from django.views.generic import View
 
 
 # cursor=connection.cursor()
@@ -33,6 +32,10 @@ from django.views.generic import View
 # 415 unsupported media type - 请求类型错误。
 # 422 unprocessable entity - 校验错误时用。
 # 429 too many request - 请求过多。
+from django.views.generic import View
+
+from main.utils import dictfetchall, format_to_json
+
 
 def get_poem_by_title(request):
     title = request.GET.get('title', '')
@@ -48,18 +51,13 @@ def get_poem_by_title(request):
             title=title, start=start_raw, end=limit))
 
     all = dictfetchall(cursor)
+    cursor.close()
 
     print(all)
 
-    json_data = json.dumps({'code': '2', 'msg': '', 'data': all})
+    json_data = format_to_json(200, data=all)
 
     return HttpResponse(json_data, content_type='application/ajax')
 
 
-def dictfetchall(cursor):
-    "Return all rows from a cursor as a dict"
-    columns = [col[0] for col in cursor.description]
-    return [
-        dict(zip(columns, row))
-        for row in cursor.fetchall()
-    ]
+
